@@ -1,0 +1,18 @@
+services:
+  first_service:
+    build:
+      context: ./first_service
+      dockerfile: Dockerfile.release
+    hostname: first_service
+    environment:
+      - HOME=/service
+      - CCACHE_DIR=/service/.ccache
+    networks:
+      - release-net
+    ports:
+      - "8080:8080"
+
+networks:
+  release-net:
+    driver: bridge
+

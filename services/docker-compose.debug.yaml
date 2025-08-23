@@ -1,0 +1,29 @@
+services:
+  first_service:
+    build:
+      context: ./first_service
+      dockerfile: Dockerfile.debug
+    hostname: first_service
+    environment:
+      - HOME=/service
+      - CCACHE_DIR=/service/.ccache
+    security_opt:
+      - seccomp=./first_service/seccomp_config.json
+    command:
+      - ./run_as_user.sh
+      - "${UID}"
+      - "${GID}"
+      - sh
+      - -lc
+      - "make build-debug && make test-debug && make start-debug"
+    volumes:
+      - ./first_service:/service
+    networks:
+      - debug-net
+    ports:
+      - "8080:8080"
+
+networks:
+  debug-net:
+    driver: bridge
+
