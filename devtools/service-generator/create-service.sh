@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Функция создания шаблона сервиса userver (без дополнений)
+# Функция создания шаблона сервиса userver
 userver-create-service() {
     REPO_URL="https://github.com/userver-framework/userver.git"
     BRANCH="develop"
@@ -61,9 +61,6 @@ if [[ "$SERVICE_PATH" != "$REQUIRED_DIR/"* ]]; then
     echo "Ошибка: Сервисы должны располагаться только в папке '${REQUIRED_DIR}'" >&2
     exit 1
 fi
-
-# Получаем чистое имя сервиса
-SERVICE_NAME="$(basename "$SERVICE_PATH")"
 
 # Проверка существования папки сервиса
 if [[ -d "$SERVICE_NAME" ]]; then
