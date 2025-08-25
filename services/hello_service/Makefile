@@ -1,4 +1,4 @@
-PROJECT_NAME = first_service
+PROJECT_NAME = hello_service
 NPROCS ?= $(shell nproc)
 CLANG_FORMAT ?= clang-format
 DOCKER_IMAGE ?= ghcr.io/userver-framework/ubuntu-24.04-userver:latest

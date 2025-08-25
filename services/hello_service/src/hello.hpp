@@ -2,7 +2,7 @@
 
 #include <userver/server/handlers/http_handler_base.hpp>
 
-namespace first_service {
+namespace hello_service {
 
 class Hello final : public userver::server::handlers::HttpHandlerBase {
 public:
@@ -14,4 +14,4 @@ public:
         const override;
 };
 
-}  // namespace first_service
+}  // namespace hello_service

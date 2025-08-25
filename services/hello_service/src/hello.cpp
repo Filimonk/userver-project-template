@@ -2,7 +2,7 @@
 
 #include <greeting.hpp>
 
-namespace first_service {
+namespace hello_service {
 
 std::string
 Hello::HandleRequestThrow(const userver::server::http::HttpRequest& request, userver::server::request::RequestContext&)
@@ -10,4 +10,4 @@ Hello::HandleRequestThrow(const userver::server::http::HttpRequest& request, use
     return SayHelloTo(request.GetArg("name"), UserType::kFirstTime);
 }
 
-}  // namespace first_service
+}  // namespace hello_service

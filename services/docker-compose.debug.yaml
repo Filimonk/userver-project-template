@@ -1,14 +1,28 @@
 services:
-  first_service:
+  nginx:
     build:
-      context: ./first_service
+      context: ./nginx
       dockerfile: Dockerfile.debug
-    hostname: first_service
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx-debug.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/static:/usr/share/nginx/html:ro
+    networks:
+      - debug-net
+    depends_on:
+      - hello_service
+
+  hello_service:
+    build:
+      context: ./hello_service
+      dockerfile: Dockerfile.debug
+    hostname: hello_service
     environment:
       - HOME=/service
       - CCACHE_DIR=/service/.ccache
     security_opt:
-      - seccomp=./first_service/seccomp_config.json
+      - seccomp=./hello_service/seccomp_config.json
     command:
       - ./run_as_user.sh
       - "${UID}"
@@ -17,11 +31,9 @@ services:
       - -lc
       - "make build-debug && make test-debug && make start-debug"
     volumes:
-      - ./first_service:/service
+      - ./hello_service:/service
     networks:
       - debug-net
-    ports:
-      - "8080:8080"
 
 networks:
   debug-net:

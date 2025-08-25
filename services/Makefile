@@ -27,6 +27,11 @@ down-debug:
 	$(COMPOSE_DEBUG) down --remove-orphans
 down: down-debug
 
+# Перезапускаем сервис через переменную S=имя.
+restart-debug:
+	$(COMPOSE_DEBUG) restart $(S)
+restart: restart-debug
+
 # Логи всех сервисов, или конкретного (через S=имя)
 logs-debug:
 	$(COMPOSE_DEBUG) logs -f $(S)
@@ -47,6 +52,10 @@ up-release:
 # Останавливаем и чистим контейнеры/сеть этого проекта.
 down-release:
 	$(COMPOSE_RELEASE) down --remove-orphans
+
+# Перезапускаем сервис через переменную S=имя.
+restart-release:
+	$(COMPOSE_RELEASE) restart $(S)
 
 # Логи всех сервисов, или конкретного (через S=имя)
 logs-release:

@@ -1,16 +1,25 @@
 services:
-  first_service:
+  nginx:
     build:
-      context: ./first_service
+      context: ./nginx
       dockerfile: Dockerfile.release
-    hostname: first_service
+    ports:
+      - "80:80"
+    networks:
+      - release-net
+    depends_on:
+      - hello_service
+  
+  hello_service:
+    build:
+      context: ./hello_service
+      dockerfile: Dockerfile.release
+    hostname: hello_service
     environment:
       - HOME=/service
       - CCACHE_DIR=/service/.ccache
     networks:
       - release-net
-    ports:
-      - "8080:8080"
 
 networks:
   release-net:

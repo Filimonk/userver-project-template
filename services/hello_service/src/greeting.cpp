@@ -4,7 +4,7 @@
 
 #include <userver/utils/assert.hpp>
 
-namespace first_service {
+namespace hello_service {
 
 std::string SayHelloTo(std::string_view name, UserType type) {
     if (name.empty()) {
@@ -21,4 +21,4 @@ std::string SayHelloTo(std::string_view name, UserType type) {
     UASSERT(false);
 }
 
-}  // namespace first_service
+}  // namespace hello_service
