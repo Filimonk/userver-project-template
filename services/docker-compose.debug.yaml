@@ -11,55 +11,29 @@ services:
     networks:
       - debug-net
     depends_on:
-      - auth_service
+      - hello_service
 
-  auth_service:
+  hello_service:
     build:
-      context: ./auth_service
+      context: ./hello_service
       dockerfile: Dockerfile.debug
-    hostname: auth_service
+    hostname: hello_service
     environment:
-      # <<: *db_env
-      # DB_CONNECTION: "postgresql://${AUTH_DB_USER}:${AUTH_DB_PASSWORD}@postgresql:5432/${AUTH_DB_NAME}?\
-                      # options=-c%20search_path%3D${AUTH_DB_SCHEMA}"
-      DB_CONNECTION: "postgresql://${AUTH_DB_USER}:${AUTH_DB_PASSWORD}@postgresql:5432/${AUTH_DB_NAME}"
-      HOME: /service
-      CCACHE_DIR: /service/.ccache
+      - HOME=/service
+      - CCACHE_DIR=/service/.ccache
     security_opt:
-      - seccomp=./auth_service/seccomp_config.json
+      - seccomp=./hello_service/seccomp_config.json
     command:
       - ./run_as_user.sh
       - "${UID}"
       - "${GID}"
       - sh
       - -lc
-      - "make build-debug && ./build-debug/auth_service --config configs/static_config.yaml \
-                                                        --config_vars configs/config_vars.yaml"
-      # - "make build-debug && make test-debug && ./build-debug/auth_service --config configs/static_config.yaml \
-                                                                           # --config_vars configs/config_vars.yaml"
+      - "make build-debug && make test-debug && make start-debug"
     volumes:
-      - ./auth_service:/service
+      - ./hello_service:/service
     networks:
       - debug-net
-    depends_on:
-      - postgresql
-  
-  postgresql:
-    container_name: postgresql
-    image: postgres:17
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB} # Стандартная бд, которую лучше не использовать для консистентности 
-                                  # баз данных в сервисе (будем все используемые бд создавать миграциями)
-    volumes:
-      - ./postgresql/build:/docker-entrypoint-initdb.d
-      - postgresql_data:/var/lib/postgresql/data
-    networks:
-      - debug-net
-
-volumes:
-  postgresql_data:
 
 networks:
   debug-net:

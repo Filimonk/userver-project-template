@@ -3,7 +3,6 @@ COMPOSE_DEBUG := docker compose -f docker-compose.debug.yaml
 COMPOSE_RELEASE := docker compose -f docker-compose.release.yaml
 S ?=  # Переменная для перечисления сервисов, логи которых хотим получить
 
-
 # Определяем UID и GID хоста.
 # Если запускаем от root (UID=0), то берём 1000:1000
 UID := $(shell id -u)
@@ -16,18 +15,10 @@ endif
 export UID
 export GID
 
-
-.PHONY: collect-postgresql-migrations
-
-# Сбор миграций из всех сервисов (проверка .env файла внутри)
-collect-postgresql-migrations:
-	@./collect-postgresql-migrations
-
-
 .PHONY: up-debug down-debug logs-debug ps-debug up down logs ps
 
 # Поднимаем окружение в фоне, с билдом образов.
-up-debug: collect-postgresql-migrations 
+up-debug:
 	$(COMPOSE_DEBUG) up --build -d
 up: up-debug
 
@@ -35,11 +26,6 @@ up: up-debug
 down-debug:
 	$(COMPOSE_DEBUG) down --remove-orphans
 down: down-debug
-
-# Останавливаем с очисткой volumes
-down-clean-debug:
-	$(COMPOSE_DEBUG) down --remove-orphans -v
-down-clean: down-clean-debug
 
 # Перезапускаем сервис через переменную S=имя.
 restart-debug:
@@ -60,16 +46,12 @@ ps: ps-debug
 .PHONY: up-release down-release logs-release ps-release
 
 # Поднимаем окружение в фоне, с билдом образов.
-up-release: collect-postgresql-migrations 
+up-release:
 	$(COMPOSE_RELEASE) up --build -d
 
 # Останавливаем и чистим контейнеры/сеть этого проекта.
 down-release:
 	$(COMPOSE_RELEASE) down --remove-orphans
-
-# Останавливаем с очисткой volumes
-down-clean-release:
-	$(COMPOSE_RELEASE) down --remove-orphans -v
 
 # Перезапускаем сервис через переменную S=имя.
 restart-release:
