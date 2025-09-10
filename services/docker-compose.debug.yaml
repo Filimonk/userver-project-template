@@ -11,29 +11,62 @@ services:
     networks:
       - debug-net
     depends_on:
-      - hello_service
+      - auth_service
 
-  hello_service:
+  auth_service:
     build:
-      context: ./hello_service
+      context: ./auth_service
       dockerfile: Dockerfile.debug
-    hostname: hello_service
+    hostname: auth_service
     environment:
-      - HOME=/service
-      - CCACHE_DIR=/service/.ccache
+      # <<: *db_env
+      # DB_CONNECTION: "postgresql://${AUTH_DB_USER}:${AUTH_DB_PASSWORD}@postgresql:5432/${AUTH_DB_NAME}?\
+                      # options=-c%20search_path%3D${AUTH_DB_SCHEMA}"
+      DB_CONNECTION: "postgresql://${AUTH_DB_USER}:${AUTH_DB_PASSWORD}@postgresql:5432/${AUTH_DB_NAME}"
+      HOME: /service
+      CCACHE_DIR: /service/.ccache
     security_opt:
-      - seccomp=./hello_service/seccomp_config.json
+      - seccomp=./auth_service/seccomp_config.json
     command:
       - ./run_as_user.sh
       - "${UID}"
       - "${GID}"
       - sh
       - -lc
-      - "make build-debug && make test-debug && make start-debug"
+      # - "make build-debug && make start-debug"
+      - "make build-debug && ./build-debug/auth_service --config configs/static_config.yaml \
+                                                        --config_vars configs/config_vars.yaml"
+      # - "make build-debug && make test-debug && ./build-debug/hello_postgres_service --config configs/static_config.yaml \
+                                                                                     # --config_vars configs/config_vars.yaml"
     volumes:
-      - ./hello_service:/service
+      - ./auth_service:/service
     networks:
       - debug-net
+    depends_on:
+      - postgresql
+    ports:
+      - "8080:8080"
+  
+  postgresql:
+    container_name: postgresql
+    image: postgres:17
+    # env_file: .env
+    environment: # &db_env
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB} # Стандартная бд, которую лучше не использовать для консистентности 
+                                  # баз данных в сервисе (будем все используемые бд создавать миграциями)
+    ports:
+      - 5432
+    volumes:
+      - ./postgresql/build:/docker-entrypoint-initdb.d
+      - ./postgresql/.pgdata:/var/lib/postgresql/data # Для release делать именнованый volume
+    networks:
+      - debug-net
+
+# volumes:
+  # postgresql_data:
+  # Для release
 
 networks:
   debug-net:

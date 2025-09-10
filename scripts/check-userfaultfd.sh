@@ -1,7 +1,7 @@
 #!/bin/bash
 # Проверка возможности вызвать userfaultfd из текущего пользователя
 
-cat > check_userfaultfd.c <<'EOF'
+cat > check-userfaultfd.c <<'EOF'
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/syscall.h>
@@ -31,14 +31,14 @@ int main() {
 }
 EOF
 
-gcc check_userfaultfd.c -o check_userfaultfd 2>/dev/null
+gcc check-userfaultfd.c -o check-userfaultfd 2>/dev/null
 if [ $? -ne 0 ]; then
     echo "Ошибка: не удалось скомпилировать тестовую программу (нужен gcc)."
     exit 1
 fi
 
-./check_userfaultfd
+./check-userfaultfd
 rc=$?
-rm -f check_userfaultfd.c check_userfaultfd
+rm -f check-userfaultfd.c check-userfaultfd
 exit $rc
 

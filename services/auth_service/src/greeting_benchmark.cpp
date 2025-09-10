@@ -7,7 +7,7 @@
 #include <benchmark/benchmark.h>
 #include <userver/engine/run_standalone.hpp>
 
-using hello_service::UserType;
+using auth_service::UserType;
 
 void HelloBenchmark(benchmark::State& state) {
     userver::engine::RunStandalone([&] {
@@ -16,7 +16,7 @@ void HelloBenchmark(benchmark::State& state) {
 
         for (auto _ : state) {
             const auto name = kNames[i++ % std::size(kNames)];
-            auto result = hello_service::SayHelloTo(name, UserType::kFirstTime);
+            auto result = auth_service::SayHelloTo(name, UserType::kFirstTime);
             benchmark::DoNotOptimize(result);
         }
     });
